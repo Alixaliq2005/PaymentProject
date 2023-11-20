@@ -21,98 +21,98 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BanKAccountServiceImpl implements BankAccountService {
 
-	private final BankAccountDao bankDao;
+    private final BankAccountDao bankDao;
 
-	private final SessionDAO sessionDao;
+    private final SessionDAO sessionDao;
 
-	private final CustomerDAO cDao;
+    private final CustomerDAO cDao;
 
-	private final LogInDAO logInDAO;
+    private final LogInDAO logInDAO;
 
-	@Override
-	public BankAccount addBank(BankAccount bankAccount, String uniqueId)
-			throws UserNotLogedinException, BankAlreadyAdded {
+    @Override
+    public BankAccount addBank(BankAccount bankAccount, String uniqueId)
+            throws UserNotLogedinException, BankAlreadyAdded {
 
-		Optional<CurrentSessionUser> currentUser = sessionDao.findByUuid(uniqueId);
+        Optional<CurrentSessionUser> currentUser = sessionDao.findByUuid(uniqueId);
 
-		if (!currentUser.isPresent()) {
-			throw new UserNotLogedinException("Please Login first");
-		}
+        if (!currentUser.isPresent()) {
+            throw new UserNotLogedinException("Please Login first");
+        }
 
-		Optional<Customer> customer = cDao.findById(currentUser.get().getUserId());
-		Wallet wallet = customer.get().getWallet();
+        Optional<Customer> customer = cDao.findById(currentUser.get().getUserId());
+        Wallet wallet = customer.get().getWallet();
 
-		Optional<BankAccount> bankAc = bankDao.findById(bankAccount.getAccountNumber());
+        Optional<BankAccount> bankAc = bankDao.findById(bankAccount.getAccountNumber());
 
-		if (bankAc.isPresent()) {
-			throw new BankAlreadyAdded(
-					"Bank with " + bankAccount.getAccountNumber() + " this Account Nuber Already Exist");
-		}
+        if (bankAc.isPresent()) {
+            throw new BankAlreadyAdded(
+                    "Bank with " + bankAccount.getAccountNumber() + " this Account Number Already Exist");
+        }
 
-		System.out.println(wallet.getWalletId());
-		bankAccount.setWalletId(wallet.getWalletId());
-		return bankDao.save(bankAccount);
+        System.out.println(wallet.getWalletId());
+        bankAccount.setWalletId(wallet.getWalletId());
+        return bankDao.save(bankAccount);
 
-	}
+    }
 
-	@Override
-	public BankAccount removeBank(Integer accountNumber, String uniqueId)
-			throws BankAccountNotExists, UserNotLogedinException {
-		Optional<CurrentSessionUser> currentUser = sessionDao.findByUuid(uniqueId);
+    @Override
+    public BankAccount removeBank(Integer accountNumber, String uniqueId)
+            throws BankAccountNotExists, UserNotLogedinException {
+        Optional<CurrentSessionUser> currentUser = sessionDao.findByUuid(uniqueId);
 
-		if (!currentUser.isPresent()) {
-			throw new UserNotLogedinException("Please Login first");
-		}
+        if (!currentUser.isPresent()) {
+            throw new UserNotLogedinException("Please Login first");
+        }
 
-		Optional<BankAccount> bankAccount = bankDao.findById(accountNumber);
+        Optional<BankAccount> bankAccount = bankDao.findById(accountNumber);
 
-		bankDao.delete(bankAccount.get());
+        bankDao.delete(bankAccount.get());
 
-		return bankAccount.get();
+        return bankAccount.get();
 
-	}
+    }
 
-	@Override
-	public BankAccount viewBankAccountI(Integer accountNumber, String uniqueId)
-			throws BankAccountNotExists, UserNotLogedinException {
+    @Override
+    public BankAccount viewBankAccountI(Integer accountNumber, String uniqueId)
+            throws BankAccountNotExists, UserNotLogedinException {
 
-		Optional<CurrentSessionUser> currentUser = sessionDao.findByUuid(uniqueId);
+        Optional<CurrentSessionUser> currentUser = sessionDao.findByUuid(uniqueId);
 
-		if (!currentUser.isPresent()) {
-			throw new UserNotLogedinException("Please Login first");
-		}
+        if (!currentUser.isPresent()) {
+            throw new UserNotLogedinException("Please Login first");
+        }
 
-		Optional<BankAccount> bankAccount = bankDao.findById(accountNumber);
+        Optional<BankAccount> bankAccount = bankDao.findById(accountNumber);
 
-		if (bankAccount.isPresent()) {
-			return bankAccount.get();
-		} else {
-			throw new BankAccountNotExists(
-					"Bank account is not existed with current account Number :" + accountNumber);
-		}
+        if (bankAccount.isPresent()) {
+            return bankAccount.get();
+        } else {
+            throw new BankAccountNotExists(
+                    "Bank account is not existed with current account Number :" + accountNumber);
+        }
 
-	}
+    }
 
-	@Override
-	public BankAccount viewAllAccount(String uniqueId)
-			throws UserNotLogedinException, NotAnyBankAddedYet, BankAccountNotExists {
-		Optional<CurrentSessionUser> currentUser = sessionDao.findByUuid(uniqueId);
+    @Override
+    public BankAccount viewAllAccount(String uniqueId)
+            throws UserNotLogedinException, NotAnyBankAddedYet, BankAccountNotExists {
+        Optional<CurrentSessionUser> currentUser = sessionDao.findByUuid(uniqueId);
 
-		if (!currentUser.isPresent()) {
-			throw new UserNotLogedinException("Please Login first");
-		}
+        if (!currentUser.isPresent()) {
+            throw new UserNotLogedinException("Please Login first");
+        }
 
-		Optional<Customer> customer = cDao.findById(currentUser.get().getUserId());
-		Wallet wallet = customer.get().getWallet();
+        Optional<Customer> customer = cDao.findById(currentUser.get().getUserId());
+        Wallet wallet = customer.get().getWallet();
 
-		BankAccount bankAccounts = bankDao.findByWalletId(wallet.getWalletId());
+        BankAccount bankAccounts = bankDao.findByWalletId(wallet.getWalletId());
 
-		if (bankAccounts != null) {
-			return bankAccounts;
-		} else {
-			throw new BankAccountNotExists("Bank account is not existed in current user ");
-		}
+        if (bankAccounts != null) {
+            return bankAccounts;
+        } else {
+            throw new BankAccountNotExists("Bank account is not existed in current user ");
+        }
 
-	}
+    }
 
 }

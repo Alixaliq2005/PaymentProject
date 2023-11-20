@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SignUpController {
 
-	private CustomerService signUpService;
+	private final CustomerService signUpService;
 	
 	@PostMapping("/signUp")
 	public ResponseEntity<Customer> createNewSignUpHandler(@RequestBody Customer newSignUp)
